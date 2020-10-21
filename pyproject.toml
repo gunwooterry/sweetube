@@ -7,6 +7,7 @@ authors = ["Your Name <you@example.com>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 youtube_transcript_api = "^0.3.1"
+hatesonar = "^0.0.7"
 
 [tool.poetry.dev-dependencies]
 
