@@ -14,7 +14,11 @@ class Detector:
         for script in scripts:
             detection = self.model.ping(text=script)
             highest_confidence = sorted(detection['classes'], key=itemgetter('confidence'), reverse=True)[0]
-            detections.append([detection['text'], highest_confidence])
+            detections.append({
+                'text': detection['text'],
+                'label': highest_confidence['class_name'],
+                'confidence': highest_confidence['confidence'],
+            })
 
         return detections
 
