@@ -26,7 +26,7 @@ class TranscriptData:
         cur = 0
         res = []
         for t in texts:
-            duration = self.duration * len(t) / len(texts)
+            duration = self.duration * len(t) / len(self.text)
             res.append(self.__class__(
                 t.strip(),
                 self.start + cur,
