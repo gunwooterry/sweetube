@@ -3,6 +3,7 @@ import click
 
 from sweetube.transcript import Transcriptor, TranscriptorFailed
 from sweetube.detection import Detector
+from sweetube.chunk import SimpleChunk
 from sweetube.cli import output
 
 
@@ -33,6 +34,7 @@ def parse_url(ctx, param, value):
     help='Output format (text/json)')
 def main(video, only_manually, only_hate, output_format):
     """Calculate and return hate speeches in a specific YouTube video"""
+    # Fetch Transcript
     try:
         transcriptor = Transcriptor(only_manually=only_manually)
         transcript_result = transcriptor.fetch(video)
@@ -40,11 +42,16 @@ def main(video, only_manually, only_hate, output_format):
         click.echo(e.msg, err=True)
         raise click.exceptions.Exit(-1)
 
-    inverted_index = {e['text']: e for e in transcript_result}
+    # Chunk Transcript
+    transcript_result = SimpleChunk(threshold_words=15).chunk(transcript_result)
 
+    inverted_index = {e.text: e for e in transcript_result}
+
+    # Detect hate speeches
     detector = Detector()
-    detected_result = detector.detect([e['text'] for e in transcript_result])
+    detected_result = detector.detect([e.text for e in transcript_result])
 
+    # Filter and sort results
     filtered_result = [
         e for e in detected_result
         if e['label'] not in [
@@ -54,6 +61,7 @@ def main(video, only_manually, only_hate, output_format):
     ]
     sorted_result = sorted(filtered_result, key=lambda e: (e['label'] == 'offensive_language', -e['confidence']))
 
+    # Export output to stdout
     output_fn = getattr(output, output_format, output.unsupported)
     output_fn(sorted_result, inverted_index)
 
