@@ -1,6 +1,7 @@
 from urllib.parse import urlparse, parse_qsl
 import click
 
+from sweetube.chunk.base import FineChunk
 from sweetube.transcript import Transcriptor, TranscriptorFailed
 from sweetube.detection import Detector
 from sweetube.chunk import SimpleChunk
@@ -43,7 +44,7 @@ def main(video, only_manually, only_hate, output_format):
         raise click.exceptions.Exit(-1)
 
     # Chunk Transcript
-    transcript_result = SimpleChunk(threshold_words=15).chunk(transcript_result)
+    transcript_result = FineChunk(threshold_words=30).chunk(transcript_result)
 
     inverted_index = {e.text: e for e in transcript_result}
 
@@ -54,10 +55,10 @@ def main(video, only_manually, only_hate, output_format):
     # Filter and sort results
     filtered_result = [
         e for e in detected_result
-        if e['label'] not in [
+        if (e['label'] not in [
             'neither',
             *(['offensive_language'] if only_hate else [])
-        ]
+        ]) and e['confidence'] > 0.6
     ]
     sorted_result = sorted(filtered_result, key=lambda e: (e['label'] == 'offensive_language', -e['confidence']))
 
