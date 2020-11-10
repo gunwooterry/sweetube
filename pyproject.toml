@@ -9,6 +9,7 @@ python = "^3.7"
 youtube_transcript_api = "^0.3.1"
 hatesonar = "^0.0.7"
 click = "^7.1.2"
+tqdm = "^4.51.0"
 
 [tool.poetry.dev-dependencies]
 
