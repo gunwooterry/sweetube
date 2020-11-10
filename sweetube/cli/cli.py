@@ -1,55 +1,62 @@
 from urllib.parse import urlparse, parse_qsl
+import click
 
-from sweetube.transcript import Transcriptor
+from sweetube.transcript import Transcriptor, TranscriptorFailed
 from sweetube.detection import Detector
+from sweetube.cli import output
 
 
-class CLIError(RuntimeError):
-    def __init__(self, msg):
-        super().__init__(msg)
-
-
-def parse_url(url):
-    if type(url) == str:
-        url = urlparse(arg)
+def parse_url(ctx, param, value):
+    url = urlparse(value)
     if url.hostname is None:
-        return arg
+        return value
     if url.hostname not in ['youtube.com', 'www.youtube.com', 'm.youtube.com']:
-        raise CLIError('Supplied URL is not of YouTube')
+        raise click.BadArgumentUsage('Supplied URL is not of YouTube')
     if url.path != '/watch':
-        raise CLIError('Supplied URL path is not for videos')
+        raise click.BadArgumentUsage('Supplied URL path is not for videos')
     qs = dict(parse_qsl(url.query))
     if 'v' not in qs:
-        raise CLIError('Supplied URL query does not specify any video')
+        raise click.BadArgumentUsage('Supplied URL query does not specify any video')
     return qs['v']
 
 
-def cli(video):
-    video_id = parse_url(video)
-
-    transcriptor = Transcriptor()
-    transcript_result = transcriptor.fetch(video_id)
+@click.command()
+@click.argument('video', callback=parse_url)
+@click.option(
+    '-m', 'only_manually', is_flag=True, default=False,
+    help='Only search subscriptions manually created')
+@click.option(
+    '-s', '--short', '--hate', 'only_hate', is_flag=True, default=False,
+    help='Only search hate speeches (and ignore offensive languages)')
+@click.option(
+    '-o', 'output_format', type=click.Choice(['text', 'json'], case_sensitive=False), default='text',
+    help='Output format (text/json)')
+def main(video, only_manually, only_hate, output_format):
+    """Calculate and return hate speeches in a specific YouTube video"""
+    try:
+        transcriptor = Transcriptor(only_manually=only_manually)
+        transcript_result = transcriptor.fetch(video)
+    except TranscriptorFailed as e:
+        click.echo(e.msg, err=True)
+        raise click.exceptions.Exit(-1)
 
     inverted_index = {e['text']: e for e in transcript_result}
 
     detector = Detector()
     detected_result = detector.detect([e['text'] for e in transcript_result])
 
-    sorted_result = sorted(detected_result, key=lambda e: (e['label'] == 'offensive_language', -e['confidence']))
+    filtered_result = [
+        e for e in detected_result
+        if e['label'] not in [
+            'neither',
+            *(['offensive_language'] if only_hate else [])
+        ]
+    ]
+    sorted_result = sorted(filtered_result, key=lambda e: (e['label'] == 'offensive_language', -e['confidence']))
 
-    print('type                  confidence    start time (s)    text')
-    print('------------------------------------------------------------------')
-    for e in filter(lambda e: e['label'] != 'neither', sorted_result):
-        label = e['label']
-        confidence = e['confidence']
-        start_time = inverted_index[e['text']]['start']
-        text = e['text']
-        print(f'{label.ljust(18)}    {confidence:10.03f}    {start_time:14.02f}    {text}')
+    output_fn = getattr(output, output_format, output.unsupported)
+    output_fn(sorted_result, inverted_index)
 
 
 if __name__ == '__main__':
-    import sys
-    if len(sys.argv) < 2:
-        print('YouTube URL or video ID should be input as an argument.', file=sys.stderr)
-    *_, arg = sys.argv
-    cli(arg)
+    main()

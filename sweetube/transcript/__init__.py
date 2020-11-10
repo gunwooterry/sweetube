@@ -1,1 +1,1 @@
-from .transcriptor import Transcriptor
+from .transcriptor import Transcriptor, TranscriptorFailed
