@@ -1,28 +1,20 @@
 import click
 
 
-def text(sorted_result, transcription_index):
+def text(result):
     click.echo('type                  confidence    start time (s)    text')
     click.echo('------------------------------------------------------------------')
-    for e in sorted_result:
+    for e in result:
         label = e['label']
         confidence = e['confidence']
-        start_time = transcription_index[e['text']].start
+        start_time = e['start_time']
         text = e['text']
         click.echo(f'{label.ljust(18)}    {confidence:10.03f}    {start_time:14.02f}    {text}')
 
 
-def json(sorted_result, transcription_index):
+def json(result):
     import json
-    click.echo(json.dumps([
-        {
-            'label': e['label'],
-            'confidence': e['confidence'],
-            'start_time': transcription_index[e['text']].start,
-            'text': e['text'],
-        }
-        for e in sorted_result
-    ]))
+    click.echo(json.dumps(result))
 
 
 def unsupported(sorted_result, transcription_index):

@@ -1,11 +1,9 @@
 from urllib.parse import urlparse, parse_qsl
 import click
 
-from sweetube.chunk.base import FineChunk
-from sweetube.transcript import Transcriptor, TranscriptorFailed
-from sweetube.detection import Detector
-from sweetube.chunk import SimpleChunk
-from sweetube.cli import output
+from sweetube.transcript import TranscriptorFailed
+from sweetube.runner.cli import output
+from sweetube.runner import run
 
 
 def parse_url(ctx, param, value):
@@ -34,37 +32,16 @@ def parse_url(ctx, param, value):
     '-o', 'output_format', type=click.Choice(['text', 'json'], case_sensitive=False), default='text',
     help='Output format (text/json)')
 def main(video, only_manually, only_hate, output_format):
-    """Calculate and return hate speeches in a specific YouTube video"""
-    # Fetch Transcript
+    # Run Application
     try:
-        transcriptor = Transcriptor(only_manually=only_manually)
-        transcript_result = transcriptor.fetch(video)
+        result = run(video, only_manually, only_hate)
     except TranscriptorFailed as e:
         click.echo(e.msg, err=True)
         raise click.exceptions.Exit(-1)
 
-    # Chunk Transcript
-    transcript_result = FineChunk(threshold_words=30).chunk(transcript_result)
-
-    inverted_index = {e.text: e for e in transcript_result}
-
-    # Detect hate speeches
-    detector = Detector()
-    detected_result = detector.detect([e.text for e in transcript_result])
-
-    # Filter and sort results
-    filtered_result = [
-        e for e in detected_result
-        if (e['label'] not in [
-            'neither',
-            *(['offensive_language'] if only_hate else [])
-        ]) and e['confidence'] > 0.6
-    ]
-    sorted_result = sorted(filtered_result, key=lambda e: (e['label'] == 'offensive_language', -e['confidence']))
-
     # Export output to stdout
     output_fn = getattr(output, output_format, output.unsupported)
-    output_fn(sorted_result, inverted_index)
+    output_fn(result)
 
 
 if __name__ == '__main__':
