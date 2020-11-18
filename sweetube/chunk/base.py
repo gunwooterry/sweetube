@@ -1,8 +1,10 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import List
-import requests
 from tqdm import tqdm
+from nltk.tokenize import sent_tokenize
+
+from sweetube import PUNCTUATOR
 
 
 @dataclass
@@ -39,11 +41,7 @@ class TranscriptData:
 
     def punctuate(self):
         self.text = self.text.replace('\n', ' ')
-        data = {
-            'text': self.text,
-        }
-        res = requests.post('http://bark.phon.ioc.ee/punctuator', data=data)
-        texts = res.content.decode().split('.')
+        texts = sent_tokenize(PUNCTUATOR.punctuate(self.text))
         cur = 0
         res = []
         for t in texts:
