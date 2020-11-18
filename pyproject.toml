@@ -11,6 +11,8 @@ hatesonar = "^0.0.7"
 click = "^7.1.2"
 tqdm = "^4.51.0"
 flask = "^1.1.2"
+nltk = "^3.5"
+punctuator = "^0.9.6"
 
 [tool.poetry.dev-dependencies]
 
