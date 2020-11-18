@@ -133,3 +133,6 @@ dmypy.json
 
 # Mac OS X
 .DS_Store
+
+# Pretrained model
+*.pcl
