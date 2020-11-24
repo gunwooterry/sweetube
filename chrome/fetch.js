@@ -1,13 +1,12 @@
-let serverUrl = "" //TBD
+let serverUrl = "http://localhost:5000" //TBD
 
-async function postData(url = serverUrl, data = {}) {
+async function getData(url = serverUrl) {
   const response = await fetch(url, {
-    method: 'post',
-    body: JSON.stringify(data)
+    method: 'get',
   })
   return response.json();
 }
 
-export async function postUrl(url) {
-  return await postData(serverUrl, {video_url: url})
+export async function getHateSpeech(videoUrl) {
+  return await getData(serverUrl + '/videos/' + videoUrl)
 }

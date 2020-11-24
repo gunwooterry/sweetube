@@ -3,11 +3,19 @@
   "version": "1.0",
   "description": "Sweetest YouTube Ever",
   "permissions": [
-    "webNavigation"
+    "webNavigation",
+    "tabs",
+    "http://localhost/*"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "page": "background.html",
     "persistent": false
   },
+  "content_scripts": [
+    {
+      "js": ["contentScript.js"],
+      "matches": ["*://*.youtube.com/*"]
+    }
+  ],
   "manifest_version": 2
 }
