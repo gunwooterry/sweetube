@@ -14,7 +14,7 @@
         "/static/js/1.chunk.js"
       ],
       "css": ["/static/css/main.css"],
-      "matches": ["*://*.naver.com/*"]
+      "matches": ["*://*.youtube.com/*"]
     }
   ],
   "manifest_version": 2
