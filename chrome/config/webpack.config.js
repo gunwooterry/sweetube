@@ -199,13 +199,13 @@ module.exports = function (webpackEnv) {
       // There will be one main bundle, and one file per asynchronous chunk.
       // In development, it does not produce real files.
       filename: isEnvProduction
-        ? 'static/js/[name].[contenthash:8].js'
+        ? 'static/js/[name].js'
         : isEnvDevelopment && 'static/js/bundle.js',
       // TODO: remove this when upgrading to webpack 5
       futureEmitAssets: true,
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
-        ? 'static/js/[name].[contenthash:8].chunk.js'
+        ? 'static/js/[name].chunk.js'
         : isEnvDevelopment && 'static/js/[name].chunk.js',
       // webpack uses `publicPath` to determine where the app is being served from.
       // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -293,16 +293,16 @@ module.exports = function (webpackEnv) {
       // Automatically split vendor and commons
       // https://twitter.com/wSokra/status/969633336732905474
       // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
-      splitChunks: {
-        chunks: 'all',
-        name: false,
-      },
+      // splitChunks: {
+      //   chunks: 'all',
+      //   name: false,
+      // },
       // Keep the runtime chunk separated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
       // https://github.com/facebook/create-react-app/issues/5358
-      runtimeChunk: {
-        name: entrypoint => `runtime-${entrypoint.name}`,
-      },
+      // runtimeChunk: {
+      //   name: entrypoint => `runtime-${entrypoint.name}`,
+      // },
     },
     resolve: {
       // This allows you to set a fallback for where webpack should look for modules.
@@ -345,6 +345,9 @@ module.exports = function (webpackEnv) {
           paths.appPackageJson,
           reactRefreshOverlayEntry,
         ]),
+        // new webpack.optimize.LimitChunkCountPlugin({
+        //   maxChunks: 1,
+        // }),
       ],
     },
     resolveLoader: {
@@ -632,8 +635,8 @@ module.exports = function (webpackEnv) {
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
-          filename: 'static/css/[name].[contenthash:8].css',
-          chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+          filename: 'static/css/[name].css',
+          chunkFilename: 'static/css/[name].chunk.css',
         }),
       // Generate an asset manifest file with the following content:
       // - "files" key: Mapping of all asset filenames to their corresponding

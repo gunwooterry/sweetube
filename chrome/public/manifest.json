@@ -1,25 +1,21 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
+  "name": "Sweetube",
+  "version": "1.0",
+  "description": "Sweetest YouTube Ever",
+  "permissions": [
+    "webNavigation",
+    "tabs",
+    "http://localhost/*"
+  ],
+  "content_scripts": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "js": [
+        "/static/js/main.js",
+        "/static/js/1.chunk.js"
+      ],
+      "css": ["/static/css/main.css"],
+      "matches": ["*://*.naver.com/*"]
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "manifest_version": 2
 }
