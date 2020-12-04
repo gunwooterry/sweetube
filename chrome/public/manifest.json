@@ -8,12 +8,16 @@
     "http://localhost/*"
   ],
   "background": {
-    "page": "background.html",
+    "scripts": ["/static/js/background.js"],
     "persistent": false
   },
   "content_scripts": [
     {
-      "js": ["contentScript.js"],
+      "js": [
+        "/static/js/app.js",
+        "/static/js/2.chunk.js"
+      ],
+      "css": ["/static/css/app.css"],
       "matches": ["*://*.youtube.com/*"]
     }
   ],
