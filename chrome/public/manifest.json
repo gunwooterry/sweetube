@@ -7,13 +7,17 @@
     "tabs",
     "http://localhost/*"
   ],
+  "background": {
+    "scripts": ["/static/js/background.js"],
+    "persistent": false
+  },
   "content_scripts": [
     {
       "js": [
-        "/static/js/main.js",
-        "/static/js/1.chunk.js"
+        "/static/js/app.js",
+        "/static/js/2.chunk.js"
       ],
-      "css": ["/static/css/main.css"],
+      "css": ["/static/css/app.css"],
       "matches": ["*://*.youtube.com/*"]
     }
   ],

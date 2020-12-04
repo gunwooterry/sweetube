@@ -8,7 +8,6 @@ const app = document.createElement('div');
 app.id = "sweetube";
 document.body.appendChild(app);
 ReactDOM.render(<App />, app);
-console.log("rendered");
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

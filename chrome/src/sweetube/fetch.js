@@ -7,6 +7,6 @@ async function getData(url = serverUrl) {
   return response.json();
 }
 
-export async function getHateSpeech(videoUrl) {
+export async function analyzeTranscript(videoUrl) {
   return await getData(serverUrl + '/videos/' + videoUrl)
 }

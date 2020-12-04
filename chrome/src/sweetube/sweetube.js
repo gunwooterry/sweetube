@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Modal,
   ModalHeader,
@@ -10,21 +10,24 @@ import {
 } from 'baseui/modal';
 import { KIND as ButtonKind } from 'baseui/button';
 
-export default function Sweetube() {
-  const [isOpen, setIsOpen] = useState(true);
+function getTimestamp(second) {
+  let rounded = Math.round(second);
+  return `${Math.floor(rounded / 60)}:${rounded % 60}`;
+}
+
+export default function Sweetube({ data, isOpen, onClose }) {
   return (
     <Modal
-      onClose={() => setIsOpen(false)}
+      onClose={onClose}
       closeable
       isOpen={isOpen}
       animate
-      autoFocus
-      size={SIZE.default}
+      size={SIZE.auto}
       role={ROLE.dialog}
     >
       <ModalHeader>Hate Speech Detected</ModalHeader>
       <ModalBody>
-        Do you want to continue?
+        {data.map(s => <p>{s.text} (at {getTimestamp(s.start_time)})</p>)}
       </ModalBody>
       <ModalFooter>
         <ModalButton kind={ButtonKind.tertiary}>
