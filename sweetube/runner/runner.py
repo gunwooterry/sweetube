@@ -1,9 +1,11 @@
+import csv
+
 from sweetube.chunk.base import FineChunk
 from sweetube.transcript import Transcriptor
 from sweetube.detection import Detector
 
 
-def run(video, only_manually, only_hate):
+def run(video, only_manually, only_hate, get_csv=False):
     """Calculate and return hate speeches in a specific YouTube video"""
     # Fetch Transcript
     transcriptor = Transcriptor(only_manually=only_manually)
@@ -18,14 +20,28 @@ def run(video, only_manually, only_hate):
     detector = Detector()
     detected_result = detector.detect([e.text for e in transcript_result])
 
+    if get_csv:
+        f = open(f'output_{video}.csv', 'w', encoding='utf-8', newline='')
+        wr = csv.writer(f)
+        wr.writerow(['Video ID', 'model', 'me', 'timestamp', 'transcript'])
+
     # Filter and sort results
-    filtered_result = [
-        e for e in detected_result
+    filtered_result = []
+    for e in detected_result:
+        detected = False
         if (e['label'] not in [
             'neither',
             *(['offensive_language'] if only_hate else [])
-        ]) and e['confidence'] > 0.6
-    ]
+        ]) and e['confidence'] > 0.6:
+            detected = True
+            filtered_result.append(e)
+
+        if get_csv:
+            wr.writerow([video, detected, None, inverted_index[e['text']].start, e['text']])
+
+    if get_csv:
+        f.close()
+
     sorted_result = sorted(filtered_result, key=lambda e: (e['label'] == 'offensive_language', -e['confidence']))
 
     # Return Output
