@@ -7,4 +7,4 @@ download_punctuator:
 	mv Demo-Europarl-EN.pcl data/
 
 run:
-	python ./server.py
+	python -W ignore ./server.py
