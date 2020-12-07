@@ -29,11 +29,18 @@ def run(video, only_manually, only_hate, get_csv=False):
     filtered_result = []
     for e in detected_result:
         detected = False
-        if (e['label'] not in [
-            'neither',
-            *(['offensive_language'] if only_hate else [])
-        ]) and e['confidence'] > 0.6:
+
+        if e['label'] == 'hate_speech' and e['confidence'] > 0.6:
             detected = True
+
+        if not only_hate:
+            if e['label'] == 'offensive_language' and e['confidence'] > 0.6:
+                detected = True
+            elif '__' in e['text']:
+                e['label'] = 'offensive_language'
+                detected = True
+
+        if detected:
             filtered_result.append(e)
 
         if get_csv:
