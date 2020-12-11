@@ -1,12 +1,13 @@
 from datetime import datetime
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from sweetube.runner import run
 from sweetube.transcript import TranscriptorFailed
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/videos/<video_id>')
 def calculate(video_id):

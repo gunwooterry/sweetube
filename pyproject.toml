@@ -13,6 +13,7 @@ tqdm = "^4.51.0"
 flask = "^1.1.2"
 nltk = "^3.5"
 punctuator = "^0.9.6"
+Flask-Cors = "^3.0.9"
 
 [tool.poetry.dev-dependencies]
 

@@ -2,18 +2,18 @@ const serverUrl = "http://localhost:5000" //TBD
 
 async function getData(url = serverUrl) {
   const response = await fetch(url, {
-    method: 'get',
+    method: 'GET',
   })
   return response.json();
 }
 
 async function postData(url = serverUrl, data) {
   const response = await fetch(url, {
-    method: 'post',
-    body: JSON.stringify(data),
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify(data),
   })
   return response.json();
 }
