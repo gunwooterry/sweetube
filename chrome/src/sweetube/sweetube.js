@@ -9,6 +9,7 @@ import {
   ROLE
 } from 'baseui/modal';
 import { KIND as ButtonKind } from 'baseui/button';
+import { feedback } from './fetch.js'
 
 function getTimestamp(second) {
   let rounded = Math.round(second);
@@ -19,10 +20,20 @@ function getTimestamp(second) {
   return `${min}:${sec}`;
 }
 
-export default function Sweetube({ data, isOpen, onClose }) {
+export default function Sweetube({ videoId, topThree, rateSentence, isOpen, onClose }) {
   function backToPreviousPage() {
     window.history.back();
     onClose();
+  }
+  function sendRate(isValid) {
+    // fire and forget
+    feedback(
+      {
+        video_id: videoId,
+        phrase: rateSentence.text,
+        is_valid: isValid,
+      }
+    )
   }
   return (
     <Modal
@@ -42,7 +53,14 @@ export default function Sweetube({ data, isOpen, onClose }) {
     >
       <ModalHeader>Hate Speech Detected</ModalHeader>
       <ModalBody>
-        {data.map(s => <p>{s.text} (at {getTimestamp(s.start_time)})</p>)}
+        <p>{topThree.map(s => <p>{s.text} (at {getTimestamp(s.start_time)})</p>)}</p>
+        <br/>
+        <h3>Please rate text to improve our model</h3>
+        <p>{rateSentence.text}</p>
+        <ModalButton onClick={() => sendRate(true)}>
+          It's harmful
+        </ModalButton>
+        <ModalButton kind={ButtonKind.tertiary} onClick={() => sendRate(false)}>Harmless</ModalButton>
       </ModalBody>
       <ModalFooter>
         <ModalButton kind={ButtonKind.tertiary} onClick={onClose}>

@@ -15,11 +15,15 @@ const Centered = styled('div', {
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
-  const [data, setData] = useState([]);
+  const [topThree, setTopThree] = useState([]);
+  const [rateSentence, setRateSentence] = useState('');
+  const [videoId, setVideoId] = useState('');
   chrome.runtime.onMessage.addListener(request => {
     if (request.type === 'show-modal') {
       document.querySelector('.video-stream').pause();
-      setData(request.data);
+      setTopThree(request.topThree);
+      setRateSentence(request.rateSentence);
+      setVideoId(request.videoId);
       setIsOpen(true);
     }
   });
@@ -28,7 +32,9 @@ function App() {
       <BaseProvider theme={LightTheme}>
         <Centered>
           <Sweetube
-            data={data}
+            topThree={topThree}
+            rateSentence={rateSentence}
+            videoId={videoId}
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
           />
