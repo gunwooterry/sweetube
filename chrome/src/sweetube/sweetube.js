@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   ModalHeader,
@@ -9,6 +9,8 @@ import {
   ROLE
 } from 'baseui/modal';
 import { KIND as ButtonKind } from 'baseui/button';
+import { Notification } from "baseui/notification";
+import { EmoticonRating } from 'baseui/rating';
 import { feedback } from './fetch.js'
 
 function getTimestamp(second) {
@@ -21,19 +23,17 @@ function getTimestamp(second) {
 }
 
 export default function Sweetube({ videoId, topThree, rateSentence, isOpen, onClose }) {
+  const [rating, setRating] = useState(0);
+  feedback(
+    {
+      video_id: videoId,
+      phrase: rateSentence.text,
+      is_valid: rating < 3,
+    }
+  )
   function backToPreviousPage() {
     window.history.back();
     onClose();
-  }
-  function sendRate(isValid) {
-    // fire and forget
-    feedback(
-      {
-        video_id: videoId,
-        phrase: rateSentence.text,
-        is_valid: isValid,
-      }
-    )
   }
   return (
     <Modal
@@ -41,7 +41,7 @@ export default function Sweetube({ videoId, topThree, rateSentence, isOpen, onCl
       closeable
       isOpen={isOpen}
       animate
-      size={SIZE.auto}
+      size={SIZE.default}
       role={ROLE.dialog}
       overrides={{
         Root: {
@@ -53,18 +53,30 @@ export default function Sweetube({ videoId, topThree, rateSentence, isOpen, onCl
     >
       <ModalHeader>Hate Speech Detected</ModalHeader>
       <ModalBody>
-        <p>{topThree.map(s => <p>{s.text} (at {getTimestamp(s.start_time)})</p>)}</p>
-        <br/>
-        <h3>Please rate text to improve our model</h3>
-        <p>{rateSentence.text}</p>
-        <ModalButton onClick={() => sendRate(true)}>
-          It's harmful
-        </ModalButton>
-        <ModalButton kind={ButtonKind.tertiary} onClick={() => sendRate(false)}>Harmless</ModalButton>
+        {topThree.map(s => 
+          <Notification
+            overrides={{
+              Body: {style: {width: 'auto'}},
+            }}
+          >
+            <b>{getTimestamp(s.start_time)}</b> {s.text}
+          </Notification>
+        )}
+      </ModalBody>
+      <ModalHeader>How do you feel about this sentence?</ModalHeader>
+      <ModalBody>
+        <Notification
+          overrides={{
+            Body: {style: {width: 'auto'}},
+          }}  
+        >
+          {rateSentence.text}
+        </Notification>
+        <EmoticonRating value={rating} onChange={({value}) => setRating(value)}/>
       </ModalBody>
       <ModalFooter>
         <ModalButton kind={ButtonKind.tertiary} onClick={onClose}>
-          Skip
+          Keep Watching
         </ModalButton>
         <ModalButton onClick={backToPreviousPage}>Stop Watching</ModalButton>
       </ModalFooter>
