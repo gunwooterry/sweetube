@@ -10,13 +10,15 @@ Sweetest YouTube ever. Developed for 2020 Fall KAIST CS489 (Computer Ethics).
 ├── pyproject.toml            # Package dependency
 └── README.md
 ```
-## Build Chrome Extension
+## Load SweeTube To your Chrome
 ```
 cd ./chrome
 yarn install
 yarn build
 ```
 Now you can load `build` directory to your Chrome. Watch [This Document](https://developer.chrome.com/docs/extensions/mv2/getstarted/#manifest) to see how to load built chrome extension.
+
+After you run web server on local, you can try SweeTube.
 ## Web Server Usage
 
 Install poetry and run `make init` first, to install dependencies and pretrained model.
